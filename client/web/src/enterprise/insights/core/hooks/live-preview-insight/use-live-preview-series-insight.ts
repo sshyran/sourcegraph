@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { Duration } from 'date-fns'
 
+import { RepositoryScopeInput } from '@sourcegraph/shared/src/graphql-operations'
 import { Series } from '@sourcegraph/wildcard'
 
 import {
@@ -36,7 +37,7 @@ export interface SeriesWithStroke extends SearchSeriesPreviewInput {
 interface Props {
     skip: boolean
     step: Duration
-    repositories: string[]
+    repoScope: RepositoryScopeInput
     series: SeriesWithStroke[]
 }
 
@@ -53,7 +54,7 @@ interface Result<R> {
  * instead, it's calculated on the fly in query time on the backend.
  */
 export function useLivePreviewSeriesInsight(props: Props): Result<Series<Datum>[]> {
-    const { skip, repositories, step, series } = props
+    const { skip, repoScope, step, series } = props
     const [unit, value] = getStepInterval(step)
 
     const { data, loading, error, refetch } = useQuery<GetInsightPreviewResult, GetInsightPreviewVariables>(
@@ -68,7 +69,7 @@ export function useLivePreviewSeriesInsight(props: Props): Result<Series<Datum>[
                         generatedFromCaptureGroups: srs.generatedFromCaptureGroups,
                         groupBy: srs.groupBy,
                     })),
-                    repositoryScope: { repositories },
+                    repositoryScope: repoScope,
                     timeScope: { stepInterval: { unit, value: +value } },
                 },
             },
@@ -80,12 +81,12 @@ export function useLivePreviewSeriesInsight(props: Props): Result<Series<Datum>[
             return createPreviewSeriesContent({
                 response: data,
                 originalSeries: series,
-                repositories,
+                repositories: repoScope.repositories,
             })
         }
 
         return null
-    }, [data, repositories, series])
+    }, [data, repoScope, series])
 
     if (loading) {
         return { state: { status: LivePreviewStatus.Loading }, refetch }
