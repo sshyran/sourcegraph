@@ -1,6 +1,6 @@
 import { Remote, ProxyMarked } from 'comlink'
 import { Unsubscribable } from 'rxjs'
-import { FileDecorationContext, DocumentHighlight } from 'sourcegraph'
+import { DocumentHighlight } from 'sourcegraph'
 
 import { Contributions, Evaluated, Raw, TextDocumentPositionParameters, HoverMerged } from '@sourcegraph/client-api'
 import { MaybeLoadingResult } from '@sourcegraph/codeintellify'
@@ -15,13 +15,7 @@ import { SettingsCascade } from '../settings/settings'
 import { SettingsEdit } from './client/services/settings'
 import { ExecutableExtension } from './extension/activation'
 import { ProxySubscribable } from './extension/api/common'
-import {
-    FileDecorationsByPath,
-    ViewContexts,
-    PanelViewData,
-    ViewProviderResult,
-    ContributionOptions,
-} from './extension/extensionHostApi'
+import { ViewContexts, PanelViewData, ViewProviderResult, ContributionOptions } from './extension/extensionHostApi'
 import { ExtensionViewer, TextDocumentData, ViewerData, ViewerId, ViewerUpdate } from './viewerTypes'
 
 /**
@@ -62,9 +56,6 @@ export interface FlatExtensionHostAPI {
 
     hasReferenceProvidersForDocument: (parameters: TextDocumentPositionParameters) => ProxySubscribable<boolean>
 
-    // Tree
-    getFileDecorations: (parameters: FileDecorationContext) => ProxySubscribable<FileDecorationsByPath>
-
     // CONTEXT + CONTRIBUTIONS
 
     /**
@@ -103,8 +94,6 @@ export interface FlatExtensionHostAPI {
     getActiveViewComponentChanges: () => ProxySubscribable<ExtensionViewer | undefined>
 
     getActiveCodeEditorPosition: () => ProxySubscribable<TextDocumentPositionParameters | null>
-
-    getTextDecorations: (viewerId: ViewerId) => ProxySubscribable<clientType.TextDocumentDecoration[]>
 
     /**
      * Add a viewer.
