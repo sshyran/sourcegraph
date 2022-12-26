@@ -1,9 +1,7 @@
-import classNames from 'classnames'
 import * as H from 'history'
 import { isEqual } from 'lodash'
 import { Renderer } from 'react-dom'
 
-import { ContributableMenu } from '@sourcegraph/client-api'
 import { DiffPart } from '@sourcegraph/codeintellify'
 import { isExternalLink } from '@sourcegraph/common'
 import { TextDocumentDecoration } from '@sourcegraph/extension-api-types'
@@ -14,20 +12,12 @@ import {
     groupDecorationsByLine,
 } from '@sourcegraph/shared/src/api/extension/api/decorations'
 import {
-    CommandListPopoverButton,
-    CommandListPopoverButtonProps,
-} from '@sourcegraph/shared/src/commandPalette/CommandList'
-import {
     ExtensionsControllerProps,
     RequiredExtensionsControllerProps,
 } from '@sourcegraph/shared/src/extensions/controller'
 import { createController as createExtensionsController } from '@sourcegraph/shared/src/extensions/createSyncLoadedController'
-import { UnbrandedNotificationItemStyleProps } from '@sourcegraph/shared/src/notifications/NotificationItem'
-import { Notifications } from '@sourcegraph/shared/src/notifications/Notifications'
 import { PlatformContextProps } from '@sourcegraph/shared/src/platform/context'
-import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
 
-import { ShortcutProvider } from '../../components/ShortcutProvider'
 import { createPlatformContext, SourcegraphIntegrationURLs, BrowserPlatformContext } from '../../platform/context'
 
 import { CodeHost } from './codeHost'
@@ -51,36 +41,6 @@ interface InjectProps extends PlatformContextProps<'settings' | 'sourcegraphURL'
     history: H.History
     render: Renderer
 }
-
-interface RenderCommandPaletteProps
-    extends TelemetryProps,
-        InjectProps,
-        Pick<CommandListPopoverButtonProps, 'inputClassName' | 'popoverClassName'> {
-    notificationClassNames: UnbrandedNotificationItemStyleProps['notificationItemClassNames']
-}
-
-export const renderCommandPalette =
-    ({ extensionsController, history, render, ...props }: RenderCommandPaletteProps) =>
-    (mount: HTMLElement): void => {
-        render(
-            <ShortcutProvider>
-                <CommandListPopoverButton
-                    {...props}
-                    popoverClassName={classNames('command-list-popover', props.popoverClassName)}
-                    menu={ContributableMenu.CommandPalette}
-                    extensionsController={extensionsController}
-                    location={history.location}
-                />
-                <Notifications
-                    extensionsController={extensionsController}
-                    notificationItemStyleProps={{
-                        notificationItemClassNames: props.notificationClassNames,
-                    }}
-                />
-            </ShortcutProvider>,
-            mount
-        )
-    }
 
 const cleanupDecorationsForCodeElement = (codeElement: HTMLElement, part: DiffPart | undefined): void => {
     codeElement.style.backgroundColor = ''
