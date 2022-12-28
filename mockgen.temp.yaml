@@ -51,6 +51,9 @@
     - OrgInvitationStore
     - OrgMemberStore
     - OrgStore
+    - OutboundWebhookStore
+    - OutboundWebhookJobStore
+    - OutboundWebhookLogStore
     - PhabricatorStore
     - RepoStore
     - SavedSearchStore
