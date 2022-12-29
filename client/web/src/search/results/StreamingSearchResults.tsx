@@ -70,7 +70,6 @@ export const StreamingSearchResults: FC<StreamingSearchResultsProps> = props => 
         telemetryService,
         codeInsightsEnabled,
         isSourcegraphDotCom,
-        extensionsController,
         searchAggregationEnabled,
     } = props
 
@@ -100,8 +99,6 @@ export const StreamingSearchResults: FC<StreamingSearchResultsProps> = props => 
     const [showMobileSidebar, setShowMobileSidebar] = useState(false)
 
     // Derived state
-    const extensionHostAPI =
-        extensionsController !== null && window.context.enableLegacyExtensions ? extensionsController.extHostAPI : null
     const trace = useMemo(() => new URLSearchParams(location.search).get('trace') ?? undefined, [location.search])
     const featureOverrides = useDeepMemo(
         // Nested use memo here is used for avoiding extra object calculation step on each render
@@ -122,7 +119,7 @@ export const StreamingSearchResults: FC<StreamingSearchResultsProps> = props => 
         [caseSensitive, patternType, searchMode, trace, featureOverrides]
     )
 
-    const results = useCachedSearchResults(streamSearch, submittedURLQuery, options, extensionHostAPI, telemetryService)
+    const results = useCachedSearchResults(streamSearch, submittedURLQuery, options, telemetryService)
 
     // Log view event on first load
     useEffect(
