@@ -14,7 +14,6 @@ import (
 
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/graphqlbackend"
 	bgql "github.com/sourcegraph/sourcegraph/enterprise/internal/batches/graphql"
-	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches/graphql/kind"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches/service"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches/state"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches/store"
@@ -43,8 +42,6 @@ type batchChangeResolver struct {
 	canAdminister     bool
 	canAdministerErr  error
 }
-
-const batchChangeIDKind = kind.BatchChange
 
 func marshalBatchChangeID(id int64) graphql.ID {
 	return bgql.MarshalBatchChangeID(id)
