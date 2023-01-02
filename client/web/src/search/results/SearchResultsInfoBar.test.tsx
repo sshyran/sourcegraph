@@ -39,12 +39,6 @@ const renderSearchResultsInfoBar = (
     )
 
 describe('SearchResultsInfoBar', () => {
-    beforeAll(() => {
-        window.context = {
-            enableLegacyExtensions: false,
-        } as any
-    })
-
     test('code monitoring feature flag disabled', () => {
         expect(
             renderSearchResultsInfoBar({ query: 'foo type:diff', enableCodeMonitoring: false }).asFragment()

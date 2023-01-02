@@ -29,7 +29,6 @@ import { pin, updatePin } from './codemirror/hovercard'
 import { selectableLineNumbers, SelectedLineRange, selectLines, shouldScrollIntoView } from './codemirror/linenumbers'
 import { navigateToLineOnAnyClickExtension } from './codemirror/navigate-to-any-line-on-click'
 import { search } from './codemirror/search'
-import { sourcegraphExtensions } from './codemirror/sourcegraph-extensions'
 import { tokenSelectionExtension } from './codemirror/token-selection/extension'
 import { selectionFromLocation, selectRange } from './codemirror/token-selection/selections'
 import { tokensAsLinks } from './codemirror/tokens-as-links'
@@ -96,7 +95,6 @@ export const Blob: React.FunctionComponent<BlobProps> = props => {
         isLightTheme,
         ariaLabel,
         role,
-        extensionsController,
         location,
         history,
         isBlameVisible,
@@ -198,13 +196,6 @@ export const Blob: React.FunctionComponent<BlobProps> = props => {
             enableLinkDrivenCodeNavigation ? tokensAsLinks({ history, blobInfo, preloadGoToDefinition }) : [],
             syntaxHighlight.of(blobInfo),
             pin.init(() => (hasPin ? position : null)),
-            extensionsController !== null && !navigateToLineOnAnyClick
-                ? sourcegraphExtensions({
-                      blobInfo,
-                      initialSelection: position,
-                      extensionsController,
-                  })
-                : [],
             blobPropsCompartment.of(blobProps),
             blameDecorationsCompartment.of(blameDecorations),
             navigateToLineOnAnyClick ? navigateToLineOnAnyClickExtension : [],
@@ -223,7 +214,7 @@ export const Blob: React.FunctionComponent<BlobProps> = props => {
         // further below. However, they are still needed here because we need to
         // set initial values when we re-initialize the editor.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [onSelection, blobInfo, extensionsController]
+        [onSelection, blobInfo]
     )
 
     const editorRef = useRef<EditorView>()

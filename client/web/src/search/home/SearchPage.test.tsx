@@ -8,7 +8,6 @@ import {
     mockFetchSearchContexts,
     mockGetUserSearchContextNamespaces,
 } from '@sourcegraph/shared/src/testing/searchContexts/testHelpers'
-import { extensionsController } from '@sourcegraph/shared/src/testing/searchTestHelpers'
 import { renderWithBrandedContext } from '@sourcegraph/wildcard/src/testing'
 
 import { SourcegraphContext } from '../../jscontext'
@@ -93,7 +92,6 @@ describe('SearchPage', () => {
         },
         location: history.location,
         history,
-        extensionsController,
         telemetryService: NOOP_TELEMETRY_SERVICE,
         themePreference: ThemePreference.Light,
         onThemePreferenceChange: () => undefined,
