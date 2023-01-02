@@ -2,6 +2,10 @@
 
 const path = require('path')
 
+// TODO(bazel): drop when non-bazel removed
+const IS_BAZEL = !!process.env.BAZEL_TEST
+const SRC_EXT = IS_BAZEL ? 'js' : 'ts'
+
 // Use the same locale for test runs so that snapshots generated using code that
 // uses Intl or toLocaleString() are consistent.
 //
@@ -13,6 +17,14 @@ const path = require('path')
 // ugly side effect. (This is especially evident when running tests in-band.)
 process.env.LANG = 'en_US.UTF-8'
 
+// Transform packages that do not distribute CommonJS packages (typically because they only distribute ES6
+// modules). If you get an error from jest like "Jest encountered an unexpected token. ... SyntaxError:
+// unexpected token import/export", then add it here. See
+// https://github.com/facebook/create-react-app/issues/5241#issuecomment-426269242 for more information on why
+// this is necessary.
+// TODO(bazel): use esm modules and remove transform exclusion.
+const ESM_NPM_DEPS = 'abortable-rx|@sourcegraph/comlink|monaco-editor|monaco-yaml|marked|date-fns|react-sticky-box|uuid'
+
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
   // uses latest jsdom and exposes jsdom as a global,
@@ -20,20 +32,19 @@ const config = {
   testEnvironment: __dirname + '/client/shared/dev/jest-environment.js',
 
   collectCoverage: !!process.env.CI,
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+  collectCoverageFrom: [`<rootDir>/src/**/*.{${SRC_EXT},${SRC_EXT}x}`],
   coverageDirectory: '<rootDir>/coverage',
-  coveragePathIgnorePatterns: [/\/node_modules\//.source, /\.(test|story)\.tsx?$/.source, /\.d\.ts$/.source],
+  coveragePathIgnorePatterns: [/\/node_modules\//.source, /\.(test|story)\.{jsx,tsx}?$/.source, /\.d\.ts$/.source],
   roots: ['<rootDir>/src'],
 
-  transform: { '\\.[jt]sx?$': ['babel-jest', { root: __dirname }] },
+  // TODO(bazel): use esm modules and remove transforms
+  transform: { '\\.[jt]sx?$': ['babel-jest', { root: IS_BAZEL ? process.env.JS_BINARY__EXECROOT : __dirname }] },
 
-  // Transform packages that do not distribute CommonJS packages (typically because they only distribute ES6
-  // modules). If you get an error from jest like "Jest encountered an unexpected token. ... SyntaxError:
-  // unexpected token import/export", then add it here. See
-  // https://github.com/facebook/create-react-app/issues/5241#issuecomment-426269242 for more information on why
-  // this is necessary.
+  // TODO(bazel): use esm modules and remove transform exclusion.
+  // PNPM style rules_js version. See pnpm notes at https://jestjs.io/docs/configuration
   transformIgnorePatterns: [
-    '/node_modules/(?!abortable-rx|@sourcegraph/comlink|monaco-editor|monaco-yaml|marked|date-fns|react-sticky-box|uuid)',
+    `<rootDir>/node_modules/.aspect_rules_js/(?!(${ESM_NPM_DEPS})@)`,
+    `node_modules/(?!\\.aspect_rules_js|${ESM_NPM_DEPS})`,
   ],
 
   moduleNameMapper: {
@@ -64,13 +75,13 @@ const config = {
     path.join(__dirname, 'client/shared/dev/mockUniqueId.ts'),
     path.join(__dirname, 'client/shared/dev/mockSentryBrowser.ts'),
     path.join(__dirname, 'client/shared/dev/mockMatchMedia.ts'),
-  ],
+  ].map(file => IS_BAZEL ? file.replace('.ts', '.js') : file),
   setupFilesAfterEnv: [
     require.resolve('core-js/stable'),
     require.resolve('regenerator-runtime/runtime'),
     require.resolve('@testing-library/jest-dom'),
     path.join(__dirname, 'client/shared/dev/reactCleanup.ts'),
-  ],
+  ].map(file => IS_BAZEL ? file.replace('.ts', '.js') : file),
   globalSetup: path.join(__dirname, 'client/shared/dev/jestGlobalSetup.js'),
   globals: {
     Uint8Array,
