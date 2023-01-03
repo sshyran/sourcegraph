@@ -13,7 +13,7 @@ import { noop } from 'lodash'
 import * as Monaco from 'monaco-editor'
 
 import { LazyMonacoQueryInput, DEFAULT_MONACO_OPTIONS, IEditor } from '@sourcegraph/search-ui'
-import { QueryState } from '@sourcegraph/search'
+import { QueryState } from '@sourcegraph/shared/src/search'
 import { SearchPatternType } from '@sourcegraph/shared/src/graphql-operations'
 import { ForwardReferenceComponent } from '@sourcegraph/wildcard'
 
