@@ -74,7 +74,8 @@ const config: Config = {
     staticDirs: [path.resolve(__dirname, '../assets'), STATIC_ASSETS_PATH],
     stories: getStoriesGlob(),
     addons: [
-        '@storybook/addon-actions',
+        // https://github.com/storybookjs/storybook/issues/17996#issuecomment-1298691811
+        '@storybook/addon-actions/register',
         'storybook-addon-designs',
         'storybook-dark-mode',
         '@storybook/addon-a11y',
