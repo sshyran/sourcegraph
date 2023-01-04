@@ -24,7 +24,10 @@ import {
 } from '@sourcegraph/shared/src/util/url'
 
 import { getWebGraphQLClient, requestGraphQL } from '../backend/graphql'
-import { eventLogger } from '../tracking/eventLogger'
+
+// FIXME: This causes a whole bunch of modules being imported which trigger
+// client side logic on the server.
+//import { eventLogger } from '../tracking/eventLogger'
 
 /**
  * Creates the {@link PlatformContext} for the web app.
@@ -84,7 +87,8 @@ export function createPlatformContext(): PlatformContext {
         sourcegraphURL: window.context.externalURL,
         clientApplication: 'sourcegraph',
         sideloadedExtensionURL: new LocalStorageSubject<string | null>('sideloadedExtensionURL', null),
-        telemetryService: eventLogger,
+        // FIXME: See above
+        telemetryService: undefined, //eventLogger,
     }
 
     return context
