@@ -209,6 +209,38 @@ func (c *Client) EnqueueChangesetSync(ctx context.Context, ids []int64) error {
 	return errors.New(res.Error)
 }
 
+// MockSchedulePermsSync mocks (*Client).SchedulePermsSync for tests.
+var MockSchedulePermsSync func(ctx context.Context, args protocol.PermsSyncRequest) error
+
+func (c *Client) SchedulePermsSync(ctx context.Context, args protocol.PermsSyncRequest) error {
+	if MockSchedulePermsSync != nil {
+		return MockSchedulePermsSync(ctx, args)
+	}
+
+	resp, err := c.httpPost(ctx, "schedule-perms-sync", args)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	bs, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return errors.Wrap(err, "read response body")
+	}
+
+	var res protocol.PermsSyncResponse
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		return errors.New(string(bs))
+	} else if err = json.Unmarshal(bs, &res); err != nil {
+		return err
+	}
+
+	if res.Error == "" {
+		return nil
+	}
+	return errors.New(res.Error)
+}
+
 // SyncExternalService requests the given external service to be synced.
 func (c *Client) SyncExternalService(ctx context.Context, externalServiceID int64) (*protocol.ExternalServiceSyncResult, error) {
 	req := &protocol.ExternalServiceSyncRequest{ExternalServiceID: externalServiceID}
