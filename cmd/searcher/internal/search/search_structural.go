@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"path/filepath"
 	"sort"
@@ -392,7 +391,7 @@ type subset []string
 var all universalSet = struct{}{}
 
 func structuralSearch(ctx context.Context, inputType comby.Input, paths filePatterns, extensionHint, pattern, rule string, languages []string, repo api.RepoName, sender matchSender) (err error) {
-	span, ctx := ot.StartSpanFromContext(ctx, "StructuralSearch")
+	span, ctx := ot.StartSpanFromContext(ctx, "StructuralSearch") //nolint:staticcheck // OT is deprecated
 	span.SetTag("repo", repo)
 	defer func() {
 		if err != nil {
@@ -445,6 +444,8 @@ func runCombyAgainstTar(ctx context.Context, args comby.Args, tarInput comby.Tar
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
+	logger := log.Scoped("comby", "runCombyAgainstTar")
+
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -454,11 +455,11 @@ func runCombyAgainstTar(ctx context.Context, args comby.Args, tarInput comby.Tar
 		defer tw.Close()
 		for tb := range tarInput.TarInputEventC {
 			if err := tw.WriteHeader(&tb.Header); err != nil {
-				log.NamedError(fmt.Sprintf("failed to write tar header for file %s", tb.Header.Name), err)
+				logger.Error("failed to write tar header", log.String("file", tb.Header.Name), log.Error(err))
 				continue
 			}
 			if _, err := tw.Write(tb.Content); err != nil {
-				log.NamedError(fmt.Sprintf("failed to write file content to tar format for file %s", tb.Header.Name), err)
+				logger.Error("failed to write file content to tar", log.String("file", tb.Header.Name), log.Error(err))
 				continue
 			}
 		}
@@ -475,14 +476,14 @@ func runCombyAgainstTar(ctx context.Context, args comby.Args, tarInput comby.Tar
 
 		for scanner.Scan() {
 			b := scanner.Bytes()
-			if err := scanner.Err(); err != nil {
-				// warn on scanner errors and skip
-				log.NamedError("comby error: skipping scanner error line", err)
-				break
-			}
 			if r := comby.ToCombyFileMatchWithChunks(b); r != nil {
 				sender.Send(combyChunkMatchesToFileMatch(r.(*comby.FileMatchWithChunks)))
 			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			// warn on scanner errors and skip
+			logger.Error("failed to scan", log.Error(err))
 		}
 	}()
 
@@ -509,6 +510,8 @@ func runCombyAgainstZip(ctx context.Context, args comby.Args, zipPath comby.ZipP
 	}
 	defer zipReader.Close()
 
+	logger := log.Scoped("comby", "runCombyAgainstZip")
+
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
@@ -523,21 +526,20 @@ func runCombyAgainstZip(ctx context.Context, args comby.Args, zipPath comby.ZipP
 
 		for scanner.Scan() {
 			b := scanner.Bytes()
-			if err := scanner.Err(); err != nil {
-				// warn on scanner errors and skip
-				log.NamedError("comby error: skipping scanner error line", err)
-				break
-			}
-
 			cfm := comby.ToFileMatch(b)
 			if cfm != nil {
 				fm, err := toFileMatch(&zipReader.Reader, cfm.(*comby.FileMatch))
 				if err != nil {
-					log.NamedError("error converting comby match to FileMatch, skipping", err)
+					logger.Error("failed to convert comby match to FileMatch, skipping", log.Error(err))
 					continue
 				}
 				sender.Send(fm)
 			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			// warn on scanner errors and skip
+			logger.Error("scan failed", log.Error(err))
 		}
 	}()
 

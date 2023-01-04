@@ -687,6 +687,12 @@ func (e *ExternalService) With(opts ...func(*ExternalService)) *ExternalService 
 	return clone
 }
 
+// SupportsRepoExclusion returns true when given external service supports repo
+// exclusion.
+func (e *ExternalService) SupportsRepoExclusion() bool {
+	return extsvc.SupportsRepoExclusion(e.Kind)
+}
+
 // ExternalServices is a utility type with convenience methods for operating on
 // lists of ExternalServices.
 type ExternalServices []*ExternalService
@@ -799,6 +805,12 @@ type Permission struct {
 	Namespace string
 	Action    string
 	CreatedAt time.Time
+}
+
+type RolePermission struct {
+	RoleID       int32
+	PermissionID int32
+	CreatedAt    time.Time
 }
 
 type UserRole struct {

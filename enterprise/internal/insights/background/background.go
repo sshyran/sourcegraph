@@ -15,11 +15,13 @@ import (
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/background/limiter"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/background/pings"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/background/queryrunner"
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/background/retention"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/compression"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/discovery"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/gitserver"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/pipeline"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/priority"
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/query"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/scheduler"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights/store"
 	"github.com/sourcegraph/sourcegraph/internal/database"
@@ -58,7 +60,6 @@ func GetBackgroundJobs(ctx context.Context, logger log.Logger, mainAppDB databas
 	// work to fill them - if not disabled.
 	disableHistorical, _ := strconv.ParseBool(os.Getenv("DISABLE_CODE_INSIGHTS_HISTORICAL"))
 	if !disableHistorical {
-
 		searchRateLimiter := limiter.SearchQueryRate()
 		historicRateLimiter := limiter.HistoricalWorkRate()
 		backfillConfig := pipeline.BackfillerConfig{
@@ -88,7 +89,8 @@ func GetBackgroundJobs(ctx context.Context, logger log.Logger, mainAppDB databas
 					Name:      "insight_backfill_new_index_repositories_analyzed",
 					Help:      "Counter of the number of repositories analyzed in the backfiller new state.",
 				}),
-			CostAnalyzer: priority.DefaultQueryAnalyzer(),
+			CostAnalyzer:      priority.DefaultQueryAnalyzer(),
+			RepoQueryExecutor: query.NewStreamingRepoQueryExecutor(logger.Scoped("StreamingRepoExecutor", "execute repo search in background workers")),
 		}
 
 		// Add the backfill v2 workers
@@ -134,6 +136,19 @@ func GetBackgroundQueryRunnerJob(ctx context.Context, logger log.Logger, mainApp
 		queryrunner.NewWorker(ctx, logger.Scoped("queryrunner.Worker", ""), workerStore, insightsStore, repoStore, queryRunnerWorkerMetrics, seachQueryLimiter),
 		queryrunner.NewResetter(ctx, logger.Scoped("queryrunner.Resetter", ""), workerStore, queryRunnerResetterMetrics),
 		queryrunner.NewCleaner(ctx, observationCtx, workerBaseStore),
+	}
+}
+
+func GetBackgroundDataRetentionJob(ctx context.Context, observationCtx *observation.Context, insightsDB edb.InsightsDB) []goroutine.BackgroundRoutine {
+	workerMetrics, resetterMetrics := newWorkerMetrics(observationCtx, "insights_data_retention")
+
+	workerBaseStore := basestore.NewWithHandle(insightsDB.Handle())
+	dbWorkerStore := retention.CreateDBWorkerStore(observationCtx, workerBaseStore)
+
+	return []goroutine.BackgroundRoutine{
+		retention.NewWorker(ctx, observationCtx.Logger.Scoped("Worker", ""), dbWorkerStore, workerMetrics),
+		retention.NewResetter(ctx, observationCtx.Logger.Scoped("Resetter", ""), dbWorkerStore, resetterMetrics),
+		retention.NewCleaner(ctx, observationCtx, workerBaseStore),
 	}
 }
 

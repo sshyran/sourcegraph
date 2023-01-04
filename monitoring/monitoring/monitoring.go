@@ -52,11 +52,12 @@ type Dashboard struct {
 }
 
 func (c *Dashboard) validate() error {
-	if !isValidGrafanaUID(c.Name) {
-		return errors.Errorf("Name must be lowercase alphanumeric + dashes; found \"%s\"", c.Name)
+	if err := grafana.ValidateUID(c.Name); err != nil {
+		return errors.Wrapf(err, "Name %q is invalid", c.Name)
 	}
-	if c.Title != strings.Title(c.Title) {
-		return errors.Errorf("Title must be in Title Case; found \"%s\" want \"%s\"", c.Title, strings.Title(c.Title))
+
+	if c.Title != Title(c.Title) {
+		return errors.Errorf("Title must be in Title Case; found \"%s\" want \"%s\"", c.Title, Title(c.Title))
 	}
 	if c.Description != withPeriod(c.Description) || c.Description != upperFirst(c.Description) {
 		return errors.Errorf("Description must be sentence starting with an uppercase letter and ending with period; found \"%s\"", c.Description)
@@ -101,6 +102,9 @@ func (c *Dashboard) renderDashboard(injectLabelMatchers []*labels.Matcher, folde
 	uid := c.Name
 	if folder != "" {
 		uid = fmt.Sprintf("%s-%s", folder, uid)
+		if err := grafana.ValidateUID(uid); err != nil {
+			return nil, errors.Wrapf(err, "generated UID %q is invalid", uid)
+		}
 	}
 	board := grafana.NewBoard(uid, c.Title, []string{"builtin"})
 

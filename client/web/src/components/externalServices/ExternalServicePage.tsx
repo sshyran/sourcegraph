@@ -7,11 +7,11 @@ import { Redirect, useHistory } from 'react-router'
 import { Subject } from 'rxjs'
 import { delay, repeatWhen } from 'rxjs/operators'
 
-import { ErrorAlert } from '@sourcegraph/branded/src/components/alerts'
+import { Timestamp, TimestampFormat } from '@sourcegraph/branded/src/components/Timestamp'
 import { hasProperty } from '@sourcegraph/common'
 import { useQuery } from '@sourcegraph/http-client'
 import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
-import { Button, LoadingSpinner, H2, H3, Badge, Container, Icon } from '@sourcegraph/wildcard'
+import { Button, LoadingSpinner, H2, H3, Badge, Container, Icon, ErrorAlert } from '@sourcegraph/wildcard'
 
 import {
     ExternalServiceFields,
@@ -29,7 +29,6 @@ import { FilteredConnection, FilteredConnectionQueryArguments } from '../Filtere
 import { LoaderButton } from '../LoaderButton'
 import { PageTitle } from '../PageTitle'
 import { Duration } from '../time/Duration'
-import { Timestamp, TimestampFormat } from '../time/Timestamp'
 
 import {
     useSyncExternalService,
@@ -185,9 +184,9 @@ export const ExternalServicePage: React.FunctionComponent<React.PropsWithChildre
     return (
         <div>
             {externalService ? (
-                <PageTitle title={`External service - ${externalService.displayName}`} />
+                <PageTitle title={`Code host - ${externalService.displayName}`} />
             ) : (
-                <PageTitle title="External service" />
+                <PageTitle title="Code host" />
             )}
             <H2>Update code host connection {combinedLoading && <LoadingSpinner inline={true} />}</H2>
             {combinedError !== undefined && !combinedLoading && <ErrorAlert className="mb-3" error={combinedError} />}
