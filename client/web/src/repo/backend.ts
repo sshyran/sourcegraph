@@ -84,6 +84,9 @@ export const resolveRepoRevision = memoizeObservable(
                                 tree(path: "") {
                                     url
                                 }
+                                author {
+                                    date
+                                }
                             }
                             defaultBranch {
                                 abbrevName
