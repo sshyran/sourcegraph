@@ -11,7 +11,11 @@ import { catchError, switchMap } from 'rxjs/operators'
 
 import { asError, encodeURIPathComponent, ErrorLike, isErrorLike, logger, repeatUntil } from '@sourcegraph/common'
 import { StreamingSearchResultsListProps } from '@sourcegraph/search-ui'
-import { isCloneInProgressErrorLike, isRepoSeeOtherErrorLike } from '@sourcegraph/shared/src/backend/errors'
+import {
+    isCloneInProgressErrorLike,
+    isRepoSeeOtherErrorLike,
+    isRevisionNotFoundErrorLike
+} from '@sourcegraph/shared/src/backend/errors'
 import { displayRepoName } from '@sourcegraph/shared/src/components/RepoLink'
 import { ExtensionsControllerProps } from '@sourcegraph/shared/src/extensions/controller'
 import { PlatformContextProps } from '@sourcegraph/shared/src/platform/context'
@@ -280,9 +284,10 @@ export const RepoContainer: React.FunctionComponent<React.PropsWithChildren<Repo
         return paths.some(path => matchPath(props.match.url, { path: props.match.path + path }))
     }, [props.repoContainerRoutes, props.match])
 
-    if (isErrorLike(repoOrError) || isErrorLike(resolvedRevisionOrError)) {
-        const viewerCanAdminister = !!props.authenticatedUser && props.authenticatedUser.siteAdmin
+    const viewerCanAdminister = !!props.authenticatedUser && props.authenticatedUser.siteAdmin
 
+    if (isErrorLike(repoOrError) || isErrorLike(resolvedRevisionOrError)
+        && !isRevisionNotFoundErrorLike(repoOrError as ErrorLike)) {
         return (
             <RepoContainerError
                 repoName={repoName}
@@ -445,14 +450,22 @@ export const RepoContainer: React.FunctionComponent<React.PropsWithChildren<Repo
                                 key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
                                 exact={routePath === ''}
                                 render={routeComponentProps => (
-                                    <RepoRevisionContainer
-                                        {...routeComponentProps}
-                                        {...repoRevisionContainerContext}
-                                        {...childBreadcrumbSetters}
-                                        routes={props.repoRevisionContainerRoutes}
-                                        // must exactly match how the revision was encoded in the URL
-                                        routePrefix={`${repoMatchURL}${rawRevision ? `@${rawRevision}` : ''}`}
-                                    />
+                                    (isRevisionNotFoundErrorLike(repoOrError as ErrorLike)) ? (
+                                        <RepoContainerError
+                                            repoName={repoName}
+                                            viewerCanAdminister={viewerCanAdminister}
+                                            repoFetchError={repoOrError as ErrorLike}
+                                        />
+                                    ) : (
+                                        <RepoRevisionContainer
+                                            {...routeComponentProps}
+                                            {...repoRevisionContainerContext}
+                                            {...childBreadcrumbSetters}
+                                            routes={props.repoRevisionContainerRoutes}
+                                            // must exactly match how the revision was encoded in the URL
+                                            routePrefix={`${repoMatchURL}${rawRevision ? `@${rawRevision}` : ''}`}
+                                        />
+                                    )
                                 )}
                             />
                         ))}
