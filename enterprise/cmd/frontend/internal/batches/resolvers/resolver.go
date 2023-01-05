@@ -76,7 +76,7 @@ func checkLicense() error {
 		return batchChangesErr
 	}
 
-	return errors.Wrap(batchChangesErr, "Unable to check license feature, please refer to logs for actual error message.")
+	return errors.New("Unable to check license feature, please refer to logs for actual error message.")
 }
 
 // maxUnlicensedChangesets is the maximum number of changesets that can be
