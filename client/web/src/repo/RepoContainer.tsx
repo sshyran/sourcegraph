@@ -53,7 +53,7 @@ import {
     RepoRevisionContainerContext,
     RepoRevisionContainerRoute,
 } from './RepoRevisionContainer'
-import { commitsPath, compareSpecPath } from './routes'
+import {commitsPath, compareSpecPath} from './routes'
 import { RepoSettingsAreaRoute } from './settings/RepoSettingsArea'
 import { RepoSettingsSideBarGroup } from './settings/RepoSettingsSidebar'
 
@@ -102,6 +102,8 @@ export interface RepoContainerContext
 /** A sub-route of {@link RepoContainer}. */
 export interface RepoContainerRoute extends RouteDescriptor<RepoContainerContext> {}
 
+//export interface RepoSettingsContainerRoute extends RouteDescriptor<RepoContainerContext> {}
+
 const RepoPageNotFound: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
     <HeroPage icon={MapSearchIcon} title="404: Not Found" subtitle="The repository page was not found." />
 )
@@ -123,6 +125,7 @@ interface RepoContainerProps
         CodeInsightsProps,
         NotebookProps {
     repoContainerRoutes: readonly RepoContainerRoute[]
+    repoSettingsContainerRoutes: readonly RepoContainerRoute[]
     repoRevisionContainerRoutes: readonly RepoRevisionContainerRoute[]
     repoHeaderActionButtons: readonly RepoHeaderActionButton[]
     repoSettingsAreaRoutes: readonly RepoSettingsAreaRoute[]
@@ -280,14 +283,19 @@ export const RepoContainer: React.FunctionComponent<React.PropsWithChildren<Repo
 
     // render go to the code host action on all the repo container routes and on all compare spec routes
     const isGoToCodeHostActionVisible = useMemo(() => {
-        const paths = [...props.repoContainerRoutes.map(route => route.path), compareSpecPath, commitsPath]
+        const paths = [
+            ...props.repoContainerRoutes.map(route => route.path),
+            ...props.repoSettingsContainerRoutes.map(route => route.path),
+            compareSpecPath,
+            commitsPath
+        ]
+
         return paths.some(path => matchPath(props.match.url, { path: props.match.path + path }))
-    }, [props.repoContainerRoutes, props.match])
+    }, [props.repoContainerRoutes, props.repoSettingsContainerRoutes, props.match])
 
     const viewerCanAdminister = !!props.authenticatedUser && props.authenticatedUser.siteAdmin
 
-    if (isErrorLike(repoOrError) || isErrorLike(resolvedRevisionOrError)
-        && !isRevisionNotFoundErrorLike(repoOrError as ErrorLike)) {
+    if ((isErrorLike(repoOrError) || isErrorLike(resolvedRevisionOrError)) && !isRevisionNotFoundErrorLike(repoOrError as ErrorLike)) {
         return (
             <RepoContainerError
                 repoName={repoName}
@@ -335,24 +343,60 @@ export const RepoContainer: React.FunctionComponent<React.PropsWithChildren<Repo
                 ...props.repoContainerRoutes.map(
                     ({ path, render, exact, condition = () => true }) =>
                         condition(repoContainerContext) && (
-                            <Route
-                                path={repoContainerContext.routePrefix + path}
-                                key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
-                                exact={exact}
-                                render={routeComponentProps =>
-                                    render({
-                                        ...repoContainerContext,
-                                        ...routeComponentProps,
-                                    })
-                                }
-                            />
+                            (isRevisionNotFoundErrorLike(repoOrError as ErrorLike)) ? (
+                                <RepoContainerError
+                                    repoName={repoName}
+                                    viewerCanAdminister={viewerCanAdminister}
+                                    repoFetchError={repoOrError as ErrorLike}
+                                />
+                            ) : (
+                                <Route
+                                    path={repoContainerContext.routePrefix + path}
+                                    key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
+                                    exact={exact}
+                                    render={routeComponentProps =>
+                                        render({
+                                            ...repoContainerContext,
+                                            ...routeComponentProps,
+                                        })
+                                    }
+                                />
+                            )
                         )
                 ),
-                <Route key="hardcoded-key" component={RepoPageNotFound} />,
             ]
         }
 
         return null
+    }
+
+    const getRepoSettingsContainerContextRoutes = (): (false | JSX.Element)[] | null => {
+        const repoContainerContext: RepoContainerContext = {
+            ...repoRevisionContainerContext,
+            repo: repoOrError,
+            resolvedRevisionOrError,
+            onDidUpdateExternalLinks: setExternalLinks,
+        }
+
+        return [
+            ...props.repoSettingsContainerRoutes.map(
+                ({ path, render, exact, condition = () => true }) =>
+                    condition(repoContainerContext) && (
+                        <Route
+                            path={repoContainerContext.routePrefix + path}
+                            key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
+                            exact={exact}
+                            render={routeComponentProps =>
+                                render({
+                                    ...repoContainerContext,
+                                    ...routeComponentProps,
+                                })
+                            }
+                        />
+                    )
+            ),
+            <Route key="hardcoded-key" component={RepoPageNotFound} />,
+        ]
     }
 
     const perforceCodeHostUrlToSwarmUrlMap =
@@ -470,6 +514,7 @@ export const RepoContainer: React.FunctionComponent<React.PropsWithChildren<Repo
                             />
                         ))}
                         {getRepoContainerContextRoutes()}
+                        {/*{getRepoSettingsContainerContextRoutes()}*/}
                     </Switch>
                 </Suspense>
             </ErrorBoundary>
