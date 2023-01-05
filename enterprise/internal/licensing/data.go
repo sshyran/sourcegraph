@@ -17,8 +17,11 @@ const (
 	// PlanEnterprise1 is the "Enterprise" plan for 4.0.
 	PlanEnterprise1 Plan = "enterprise-1"
 
-	// PlanFree0 is the default plan if no license key is set.
+	// PlanFree0 is the default plan before February 2023.
 	PlanFree0 Plan = "free-0"
+
+	// PlanFree1 is the default plan starting in February 2023.
+	PlanFree1 Plan = "free-1"
 )
 
 var allPlans = []Plan{
@@ -30,6 +33,7 @@ var allPlans = []Plan{
 	PlanBusiness0,
 	PlanEnterprise1,
 	PlanFree0,
+	PlanFree1,
 }
 
 // The list of features. For each feature, add a new const here and the checking logic in
@@ -122,6 +126,10 @@ var planFeatures = map[Plan][]Feature{
 		FeatureSSO,
 	},
 	PlanFree0: {
+		FeatureSSO,
+		FeatureMonitoring,
+	},
+	PlanFree1: {
 		FeatureSSO,
 		FeatureMonitoring,
 	},
