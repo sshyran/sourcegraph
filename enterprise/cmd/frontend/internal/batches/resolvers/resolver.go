@@ -1994,12 +1994,6 @@ func (r *Resolver) CheckBatchChangesCredential(ctx context.Context, args *graphq
 }
 
 func (r *Resolver) MaxUnlicensedChangesets(ctx context.Context) int32 {
-	info, err := licensing.GetConfiguredProductLicenseInfo()
-	if err == nil {
-		if info.Plan() == licensing.PlanFree1 {
-			return 10
-		}
-	}
 	return maxUnlicensedChangesets
 }
 
