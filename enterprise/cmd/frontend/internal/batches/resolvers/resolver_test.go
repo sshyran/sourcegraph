@@ -25,12 +25,12 @@ import (
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches/store"
 	bt "github.com/sourcegraph/sourcegraph/enterprise/internal/batches/testing"
 	btypes "github.com/sourcegraph/sourcegraph/enterprise/internal/batches/types"
+	edb "github.com/sourcegraph/sourcegraph/enterprise/internal/database"
 	"github.com/sourcegraph/sourcegraph/enterprise/internal/licensing"
 	"github.com/sourcegraph/sourcegraph/internal/actor"
 	"github.com/sourcegraph/sourcegraph/internal/api"
 	"github.com/sourcegraph/sourcegraph/internal/conf"
 	"github.com/sourcegraph/sourcegraph/internal/database"
-	edb "github.com/sourcegraph/sourcegraph/enterprise/internal/database"
 	"github.com/sourcegraph/sourcegraph/internal/database/dbtest"
 	"github.com/sourcegraph/sourcegraph/internal/extsvc"
 	"github.com/sourcegraph/sourcegraph/internal/extsvc/auth"
@@ -831,11 +831,11 @@ func TestCreateBatchChange(t *testing.T) {
 	logger := logtest.Scoped(t)
 	ctx := context.Background()
 	db := database.NewDB(logger, dbtest.NewDB(logger, t))
-    enterpriseDB := edb.NewEnterpriseDB(db)
-    _, err := enterpriseDB.FreeLicense().Init(ctx)
-    if err != nil {
-        t.Fatal(err)
-    }
+	enterpriseDB := edb.NewEnterpriseDB(db)
+	_, err := enterpriseDB.FreeLicense().Init(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	userID := bt.CreateTestUser(t, db, true).ID
 
