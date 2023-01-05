@@ -8,7 +8,6 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 
-	"github.com/sourcegraph/log"
 	"github.com/sourcegraph/sourcegraph/internal/gitserver"
 
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/enterprise"
@@ -62,7 +61,7 @@ func batchChangesCreateAccess(ctx context.Context, db database.DB) error {
 
 // checkLicense returns a user-facing error if the batchChanges feature is not purchased
 // with the current license or any error occurred while validating the license.
-func checkLicense(logger log.Logger) error {
+func checkLicense() error {
 	batchChangesErr := licensing.Check(licensing.FeatureBatchChanges)
 	if batchChangesErr == nil {
 		return nil
@@ -77,8 +76,7 @@ func checkLicense(logger log.Logger) error {
 		return batchChangesErr
 	}
 
-	logger.Error("Unable to check license for feathre", log.Error(batchChangesErr))
-	return errors.New("Unable to check license feature, please refer to logs for actual error message.")
+	return errors.Wrap(batchChangesErr, "Unable to check license feature, please refer to logs for actual error message.")
 }
 
 // maxUnlicensedChangesets is the maximum number of changesets that can be
@@ -511,7 +509,7 @@ func (r *Resolver) applyOrCreateBatchChange(ctx context.Context, args *graphqlba
 		return nil, ErrIDIsZero{}
 	}
 
-	if licenseErr := checkLicense(r.store.ObservationCtx().Logger); licenseErr != nil {
+	if licenseErr := checkLicense(); licenseErr != nil {
 		if licensing.IsFeatureNotActivated(licenseErr) {
 			batchSpec, err := r.store.GetBatchSpec(ctx, store.GetBatchSpecOpts{
 				RandID: opts.BatchSpecRandID,
@@ -572,7 +570,7 @@ func (r *Resolver) CreateBatchSpec(ctx context.Context, args *graphqlbackend.Cre
 		return nil, err
 	}
 
-	if err := checkLicense(r.store.ObservationCtx().Logger); err != nil {
+	if err := checkLicense(); err != nil {
 		if licensing.IsFeatureNotActivated(err) {
 			if len(args.ChangesetSpecs) > maxUnlicensedChangesets {
 				return nil, ErrBatchChangesUnlicensed{err}
