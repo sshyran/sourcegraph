@@ -64,6 +64,7 @@ type (
 
 type RolesListOptions struct {
 	*LimitOffset
+	UserID int32
 }
 
 type RoleNotFoundErr struct {
@@ -133,11 +134,13 @@ const roleListQueryFmtstr = `
 SELECT
 	%s
 FROM roles
+-- joins
+%s
 WHERE %s
 `
 
 func (r *roleStore) List(ctx context.Context, opts RolesListOptions) ([]*types.Role, error) {
-	roles := make([]*types.Role, 0, 20)
+	var roles []*types.Role
 
 	scanFunc := func(rows *sql.Rows) error {
 		role, err := scanRole(rows)
@@ -153,9 +156,22 @@ func (r *roleStore) List(ctx context.Context, opts RolesListOptions) ([]*types.R
 }
 
 func (r *roleStore) list(ctx context.Context, opts RolesListOptions, selects *sqlf.Query, scanRole func(rows *sql.Rows) error) error {
-	var whereClause = sqlf.Sprintf("deleted_at IS NULL")
+	var preds = []*sqlf.Query{
+		sqlf.Sprintf("deleted_at IS NULL"),
+	}
+	var joins = sqlf.Sprintf("")
 
-	q := sqlf.Sprintf(roleListQueryFmtstr, selects, whereClause)
+	if opts.UserID != 0 {
+		joins = sqlf.Sprintf("INNER JOIN user_roles ON user_roles.role_id = roles.id")
+		preds = append(preds, sqlf.Sprintf("user_roles.user_id = %s", opts.UserID))
+	}
+
+	q := sqlf.Sprintf(
+		roleListQueryFmtstr,
+		selects,
+		joins,
+		sqlf.Join(preds, " AND "),
+	)
 
 	if opts.LimitOffset != nil {
 		q = sqlf.Sprintf("%s\n%s", q, opts.LimitOffset.SQL())

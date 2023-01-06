@@ -63,3 +63,8 @@ var notebooksSchema string
 //
 //go:embed insights_aggregations.graphql
 var insightsAggregationsSchema string
+
+// rbacSchema is the RBAC raw graphql schema.
+//
+//go:embed rbac.graphql
+var rbacSchema string

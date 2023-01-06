@@ -249,6 +249,7 @@ func Main(enterpriseSetupHook func(database.DB, conftypes.UnifiedWatchable) ente
 		enterprise.ComputeResolver,
 		enterprise.InsightsAggregationResolver,
 		enterprise.WebhooksResolver,
+		enterprise.RBACResolver,
 	)
 	if err != nil {
 		return err
