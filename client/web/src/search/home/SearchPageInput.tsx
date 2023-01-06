@@ -41,6 +41,7 @@ import { suggestions } from '../input/suggestions'
 import { useRecentSearches } from '../input/useRecentSearches'
 
 import styles from './SearchPageInput.module.scss'
+import { parseBrowserRepoURL } from '../../util/url'
 
 interface Props
     extends SettingsCascadeProps<Settings>,
@@ -147,6 +148,7 @@ export const SearchPageInput: React.FunctionComponent<React.PropsWithChildren<Pr
             applySuggestionsOnEnter={applySuggestionsOnEnter}
             showSearchHistory={true}
             recentSearches={recentSearches}
+            parseRepoURL={parseBrowserRepoURL}
         />
     )
     return (

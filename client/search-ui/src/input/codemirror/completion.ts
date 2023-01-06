@@ -58,7 +58,7 @@ import {
 } from '@sourcegraph/shared/src/search/query/completion-utils'
 import { decorate, DecoratedToken, toDecoration } from '@sourcegraph/shared/src/search/query/decoratedToken'
 import { FILTERS, FilterType, filterTypeKeys, resolveFilter } from '@sourcegraph/shared/src/search/query/filters'
-import { getSuggestionQuery } from '@sourcegraph/shared/src/search/query/providers-utils'
+import { getSuggestionQuery, ParseRepoURLFunction } from '@sourcegraph/shared/src/search/query/providers-utils'
 import { scanSearchQuery } from '@sourcegraph/shared/src/search/query/scanner'
 import { Filter, Token } from '@sourcegraph/shared/src/search/query/token'
 import { SearchMatch } from '@sourcegraph/shared/src/search/stream'
@@ -321,6 +321,7 @@ export interface DefaultSuggestionSourcesOptions {
     disableFilterCompletion?: true
     disableSymbolCompletion?: true
     showWhenEmpty?: boolean
+    parseRepoURL?: ParseRepoURLFunction
 }
 
 /**
@@ -477,7 +478,7 @@ export function createDefaultSuggestionSources(
                 }
 
                 const results: SearchMatch[] = await options.fetchSuggestions(
-                    getSuggestionQuery(tokens, token, suggestionTypeFromTokens(tokens, options)),
+                    getSuggestionQuery(tokens, token, suggestionTypeFromTokens(tokens, options), options.parseRepoURL),
                     context.onAbort
                 )
                 if (results.length === 0) {

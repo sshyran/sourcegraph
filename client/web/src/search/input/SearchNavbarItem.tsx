@@ -16,6 +16,7 @@ import { useExperimentalFeatures, useNavbarQueryState, setSearchCaseSensitivity 
 import { NavbarQueryState, setSearchMode, setSearchPatternType } from '../../stores/navbarSearchQueryState'
 
 import { useRecentSearches } from './useRecentSearches'
+import { parseBrowserRepoURL } from '../../util/url'
 
 interface Props
     extends SettingsCascadeProps,
@@ -105,6 +106,7 @@ export const SearchNavbarItem: React.FunctionComponent<React.PropsWithChildren<P
                 hideHelpButton={false}
                 showSearchHistory={true}
                 recentSearches={recentSearches}
+                parseRepoURL={parseBrowserRepoURL}
             />
         </Form>
     )

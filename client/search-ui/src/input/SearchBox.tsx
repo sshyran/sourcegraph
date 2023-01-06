@@ -21,6 +21,7 @@ import { SearchHistoryDropdown } from './SearchHistoryDropdown'
 import { Toggles, TogglesProps } from './toggles'
 
 import styles from './SearchBox.module.scss'
+import { ParseRepoURLFunction } from '@sourcegraph/shared/src/search/query/providers-utils'
 
 export interface SearchBoxProps
     extends Omit<TogglesProps, 'navbarSearchQuery' | 'submitSearch'>,
@@ -67,6 +68,8 @@ export interface SearchBoxProps
     showSearchHistory?: boolean
 
     recentSearches?: RecentSearch[]
+
+    parseRepoURL?: ParseRepoURLFunction
 }
 
 export const SearchBox: React.FunctionComponent<React.PropsWithChildren<SearchBoxProps>> = props => {
@@ -78,6 +81,7 @@ export const SearchBox: React.FunctionComponent<React.PropsWithChildren<SearchBo
         onChange,
         selectedSearchContextSpec,
         recentSearches,
+        parseRepoURL,
     } = props
 
     const [usedInlineHistory, setUsedInlineHistory] = useTemporarySetting('search.input.usedInlineHistory', false)
@@ -198,6 +202,7 @@ export const SearchBox: React.FunctionComponent<React.PropsWithChildren<SearchBo
                         selectedSearchContextSpec={props.selectedSearchContextSpec}
                         applySuggestionsOnEnter={props.applySuggestionsOnEnter}
                         searchHistory={recentSearchesWithoutSearchContext}
+                        parseRepoURL={parseRepoURL}
                         onSelectSearchFromHistory={onInlineSearchHistorySelect}
                     />
                     <Toggles

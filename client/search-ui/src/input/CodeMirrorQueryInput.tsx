@@ -60,6 +60,7 @@ import { MonacoQueryInputProps } from './MonacoQueryInput'
 import { QueryInputProps } from './QueryInput'
 
 import styles from './CodeMirrorQueryInput.module.scss'
+import { ParseRepoURLFunction } from '@sourcegraph/shared/src/search/query/providers-utils'
 
 export interface CodeMirrorQueryInputFacadeProps extends QueryInputProps {
     /**
@@ -89,6 +90,8 @@ export interface CodeMirrorQueryInputFacadeProps extends QueryInputProps {
      * search history.
      */
     onSelectSearchFromHistory?: () => void
+
+    parseRepoURL?: ParseRepoURLFunction
 }
 
 /**
@@ -131,6 +134,7 @@ export const CodeMirrorMonacoFacade: React.FunctionComponent<
     // but added for future compatibility)
     fetchStreamSuggestions = defaultFetchStreamSuggestions,
     onCompletionItemSelected,
+    parseRepoURL,
 }) => {
     // We use both, state and a ref, for the editor instance because we need to
     // re-run some hooks when the editor changes but we also need a stable
@@ -160,6 +164,7 @@ export const CodeMirrorMonacoFacade: React.FunctionComponent<
                 isSourcegraphDotCom,
                 history,
                 applyOnEnter: applySuggestionsOnEnter,
+                parseRepoURL,
             }),
         [
             globbing,
