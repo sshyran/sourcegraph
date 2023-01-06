@@ -6,10 +6,9 @@ import classNames from 'classnames'
 
 import { Icon } from '@sourcegraph/wildcard'
 
-import { formatRepositoryStarCount } from '../util/stars'
-
 import { CodeHostIcon } from './CodeHostIcon'
 import { SearchResultStar } from './SearchResultStar'
+import { formatRepositoryStarCount } from './util/stars'
 
 import styles from './LegacyResultContainer.module.scss'
 

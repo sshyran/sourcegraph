@@ -5,10 +5,9 @@ import classNames from 'classnames'
 import { SearchMatch } from '@sourcegraph/shared/src/search/stream'
 import { ForwardReferenceExoticComponent } from '@sourcegraph/wildcard'
 
-import { formatRepositoryStarCount } from '../util/stars'
-
 import { CodeHostIcon } from './CodeHostIcon'
 import { SearchResultStar } from './SearchResultStar'
+import { formatRepositoryStarCount } from './util/stars'
 
 import styles from './ResultContainer.module.scss'
 

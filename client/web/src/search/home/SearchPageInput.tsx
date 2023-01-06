@@ -4,11 +4,12 @@ import * as H from 'history'
 import { NavbarQueryState } from 'src/stores/navbarSearchQueryState'
 import shallow from 'zustand/shallow'
 
+import { SearchBox } from '@sourcegraph/branded/src'
+// eslint-disable-next-line no-restricted-imports
+import { LazyCodeMirrorQueryInput } from '@sourcegraph/branded/src/experimental'
 import { TraceSpanProvider } from '@sourcegraph/observability-client'
-import { SearchBox } from '@sourcegraph/search-ui'
 // The experimental search input should be shown on the search home page
 // eslint-disable-next-line  no-restricted-imports
-import { LazyCodeMirrorQueryInput } from '@sourcegraph/search-ui/src/experimental'
 import { PlatformContextProps } from '@sourcegraph/shared/src/platform/context'
 import { Settings } from '@sourcegraph/shared/src/schema/settings.schema'
 import {

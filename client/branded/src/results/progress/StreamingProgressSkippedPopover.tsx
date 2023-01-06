@@ -19,7 +19,7 @@ import {
     Form,
 } from '@sourcegraph/wildcard'
 
-import { SyntaxHighlightedSearchQuery } from '../../components/SyntaxHighlightedSearchQuery'
+import { SyntaxHighlightedSearchQuery } from '../../components/search/SyntaxHighlightedSearchQuery'
 
 import { StreamingProgressProps } from './StreamingProgress'
 import { limitHit } from './StreamingProgressCount'

@@ -21,19 +21,19 @@ import { SettingsCascadeProps } from '@sourcegraph/shared/src/settings/settings'
 import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
 import { ThemeProps } from '@sourcegraph/shared/src/theme'
 
-import { CommitSearchResult } from '../components/CommitSearchResult'
-import { FileContentSearchResult } from '../components/FileContentSearchResult'
-import { FilePathSearchResult } from '../components/FilePathSearchResult'
-import { RepoSearchResult } from '../components/RepoSearchResult'
-import { SymbolSearchResult } from '../components/SymbolSearchResult'
-import { smartSearchClickedEvent } from '../util/events'
+import { CommitSearchResult } from '../components/search/CommitSearchResult'
+import { FileContentSearchResult } from '../components/search/FileContentSearchResult'
+import { FilePathSearchResult } from '../components/search/FilePathSearchResult'
+import { RepoSearchResult } from '../components/search/RepoSearchResult'
+import { SymbolSearchResult } from '../components/search/SymbolSearchResult'
+import { smartSearchClickedEvent } from '../components/search/util/events'
 
 import { NoResultsPage } from './NoResultsPage'
 import { StreamingSearchResultFooter } from './StreamingSearchResultsFooter'
 import { useItemsToShow } from './use-items-to-show'
 import { useSearchResultsKeyboardNavigation } from './useSearchResultsKeyboardNavigation'
 
-import resultContainerStyles from '../components/ResultContainer.module.scss'
+import resultContainerStyles from '../components/search/ResultContainer.module.scss'
 import styles from './StreamingSearchResultsList.module.scss'
 
 export interface StreamingSearchResultsListProps
