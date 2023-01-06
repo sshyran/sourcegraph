@@ -65,7 +65,7 @@ import { SearchMatch } from '@sourcegraph/shared/src/search/stream'
 import { createSVGIcon } from '@sourcegraph/shared/src/util/dom'
 import { toPrettyBlobURL } from '@sourcegraph/shared/src/util/url'
 
-import { formatRepositoryStarCount } from '../../components/search/util'
+import { formatRepositoryStarCount } from '../../util'
 
 import { queryTokens } from './parsedQuery'
 

@@ -6,7 +6,7 @@ import { debounce } from 'lodash'
 import { RouteComponentProps } from 'react-router'
 import { catchError, startWith } from 'rxjs/operators'
 
-import { SyntaxHighlightedSearchQuery } from '@sourcegraph/branded/src'
+import { SyntaxHighlightedSearchQuery } from '@sourcegraph/branded/src/search-ui'
 import { Timestamp } from '@sourcegraph/branded/src/components/Timestamp'
 import { asError, isErrorLike, renderMarkdown, pluralize } from '@sourcegraph/common'
 import { AuthenticatedUser } from '@sourcegraph/shared/src/auth'

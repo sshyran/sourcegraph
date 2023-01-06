@@ -5,9 +5,8 @@ import { mdiFilterOutline, mdiTextSearchVariant, mdiSourceRepository } from '@md
 import { extendedMatch, Fzf, FzfOptions, FzfResultItem } from 'fzf'
 import { SuggestionsRepoResult, SuggestionsRepoVariables } from 'src/graphql-operations'
 
-import { tokenAt, tokens as queryTokens } from '@sourcegraph/branded/src'
+import { tokenAt, tokens as queryTokens } from '@sourcegraph/branded/src/search-ui'
 // This module implements suggestions for the experimental search input
-// eslint-disable-next-line no-restricted-imports
 import {
     Group,
     Option,
@@ -17,7 +16,7 @@ import {
     FilterOption,
     QueryOption,
     getEditorConfig,
-} from '@sourcegraph/branded/src/experimental'
+} from '@sourcegraph/branded/src/search-ui/experimental'
 import { getDocumentNode, gql } from '@sourcegraph/http-client'
 import { regexInsertText } from '@sourcegraph/shared/src/search/query/completion-utils'
 import { FILTERS, FilterType, resolveFilter } from '@sourcegraph/shared/src/search/query/filters'

@@ -8,7 +8,7 @@ import { Icon } from '@sourcegraph/wildcard'
 
 import { CodeHostIcon } from './CodeHostIcon'
 import { SearchResultStar } from './SearchResultStar'
-import { formatRepositoryStarCount } from './util/stars'
+import { formatRepositoryStarCount } from '../util/stars'
 
 import styles from './LegacyResultContainer.module.scss'
 

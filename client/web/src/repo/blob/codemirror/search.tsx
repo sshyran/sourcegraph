@@ -21,7 +21,7 @@ import { createRoot, Root } from 'react-dom/client'
 import { Subject, Subscription } from 'rxjs'
 import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators'
 
-import { QueryInputToggle } from '@sourcegraph/branded/src'
+import { QueryInputToggle } from '@sourcegraph/branded/src/search-ui'
 import { Toggle } from '@sourcegraph/branded/src/components/Toggle'
 import { createUpdateableField } from '@sourcegraph/shared/src/components/CodeMirrorEditor'
 import { shortcutDisplayName } from '@sourcegraph/shared/src/keyboardShortcuts'

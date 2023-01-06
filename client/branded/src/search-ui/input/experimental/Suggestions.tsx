@@ -2,7 +2,7 @@ import React, { MouseEvent, useMemo, useState, useCallback } from 'react'
 
 import { Icon, useWindowSize } from '@sourcegraph/wildcard'
 
-import { SyntaxHighlightedSearchQuery } from '../../components/search'
+import { SyntaxHighlightedSearchQuery } from '../../components'
 
 import { Group, Option } from './suggestionsExtension'
 

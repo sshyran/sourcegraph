@@ -26,8 +26,8 @@ import {
     usePopoverContext,
 } from '@sourcegraph/wildcard'
 
-import { SyntaxHighlightedSearchQuery } from '../components/search'
-import { Timestamp } from '../components/Timestamp'
+import { Timestamp } from '../../components/Timestamp'
+import { SyntaxHighlightedSearchQuery } from '../components'
 
 import styles from './SearchHistoryDropdown.module.scss'
 

@@ -7,7 +7,7 @@ import { BrandedStory } from '@sourcegraph/wildcard/src/stories'
 import { SyntaxHighlightedSearchQuery } from './SyntaxHighlightedSearchQuery'
 
 const config: Meta = {
-    title: 'branded/search/SyntaxHighlightedSearchQuery',
+    title: 'branded/search-ui/SyntaxHighlightedSearchQuery',
     parameters: {
         chromatic: { viewports: [480] },
     },

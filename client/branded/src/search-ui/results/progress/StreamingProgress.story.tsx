@@ -7,7 +7,7 @@ import { BrandedStory } from '@sourcegraph/wildcard/src/stories'
 import { StreamingProgress } from './StreamingProgress'
 
 const config: Meta = {
-    title: 'branded/search/results/progress/StreamingProgress',
+    title: 'branded/search-ui/results/progress/StreamingProgress',
     parameters: {
         design: {
             type: 'figma',

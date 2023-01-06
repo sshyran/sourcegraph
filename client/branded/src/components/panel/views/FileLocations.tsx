@@ -18,7 +18,7 @@ import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryServi
 import { parseRepoURI } from '@sourcegraph/shared/src/util/url'
 import { LoadingSpinner, Alert, Icon } from '@sourcegraph/wildcard'
 
-import { FileContentSearchResult } from '../../search'
+import { FileContentSearchResult } from '../../../search-ui'
 
 import styles from './FileLocations.module.scss'
 

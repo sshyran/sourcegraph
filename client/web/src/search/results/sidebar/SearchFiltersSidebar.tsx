@@ -12,7 +12,7 @@ import {
     getSearchTypeLinks,
     getFiltersOfKind,
     useLastRepoName,
-} from '@sourcegraph/branded/src'
+} from '@sourcegraph/branded/src/search-ui'
 import { QueryStateUpdate, QueryUpdate } from '@sourcegraph/shared/src/search'
 import { FilterType } from '@sourcegraph/shared/src/search/query/filters'
 import { Filter } from '@sourcegraph/shared/src/search/stream'

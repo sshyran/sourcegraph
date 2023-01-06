@@ -8,7 +8,7 @@ import { PlatformContextProps } from '@sourcegraph/shared/src/platform/context'
 import { CommitMatch, getCommitMatchUrl, getRepositoryUrl } from '@sourcegraph/shared/src/search/stream'
 import { Link, Code } from '@sourcegraph/wildcard'
 
-import { Timestamp } from '../Timestamp'
+import { Timestamp } from '../../components/Timestamp'
 
 import { CommitSearchResultMatch } from './CommitSearchResultMatch'
 import { ResultContainer } from './ResultContainer'
