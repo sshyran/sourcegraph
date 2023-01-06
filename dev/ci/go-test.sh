@@ -47,7 +47,7 @@ function go_test() {
     set -x
     echo "~~~ Creating test failures anotation"
     mkdir -p ./annotations
-    cp "$tmpfile" ./annotations/go-test
+    sed '0,/=== Failed$/d' <"$tmpfile" >>./annotations/go-test
     cat ./annotations/go-test
     set +x
   fi
